@@ -1,58 +1,78 @@
 #!/usr/bin/python3
 """
-N Queens Puzzle
+N Queens problem solver
 """
+
 import sys
 
 
-def print_board(board):
-    """Print the board"""
-    result = []
-    for i in range(len(board)):
-        row = []
-        for j in range(len(board)):
-            if board[i] == j:
-                row.append([i, j])
-        result.append(row)
-    print(result)
-
-
-def is_safe(board, row, col):
-    """Check if the cell is under attack"""
-    for i in range(row):
-        if board[i] == col or \
-           board[i] - i == col - row or \
-           board[i] + i == col + row:
+def is_valid(board, row, col):
+    """
+    Check if it's valid to place a queen at board[row][col]
+    """
+    # Check this row on the left side
+    for i in range(col):
+        if board[row][i]:
             return False
+
+    # Check upper diagonal on left side
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j]:
+            return False
+
+    # Check lower diagonal on left side
+    for i, j in zip(range(row, N, 1), range(col, -1, -1)):
+        if board[i][j]:
+            return False
+
     return True
 
 
-def solve(board, row):
-    """Solve N Queen problem"""
-    if row == len(board):
-        print_board(board)
+def solve(board, col, solutions):
+    """
+    Recursive function to solve the problem
+    """
+    if col >= N:
+        # Found a solution
+        solution = []
+        for i in range(N):
+            for j in range(N):
+                if board[i][j]:
+                    solution.append([i, j])
+        solutions.append(solution)
         return
 
-    for col in range(len(board)):
-        if is_safe(board, row, col):
-            board[row] = col
-            solve(board, row + 1)
+    for row in range(N):
+        if is_valid(board, row, col):
+            board[row][col] = 1
+            solve(board, col + 1, solutions)
+            board[row][col] = 0
 
 
 if __name__ == "__main__":
-    # Validate the input
+    # Check if the correct number of arguments is provided
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
+
     try:
         N = int(sys.argv[1])
     except ValueError:
         print("N must be a number")
         sys.exit(1)
+
     if N < 4:
         print("N must be at least 4")
         sys.exit(1)
 
-    board = [0] * N
-    solve(board, 0)
+    # Initialize the board
+    board = [[0] * N for _ in range(N)]
+
+    # Solve the problem
+    solutions = []
+    solve(board, 0, solutions)
+
+    # Print solutions
+    for solution in solutions:
+        print(solution)
 
