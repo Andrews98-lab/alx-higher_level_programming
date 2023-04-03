@@ -1,54 +1,52 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
 import sys
 
 def is_safe(board, row, col, n):
-    # Check if the same column has a queen
-    for i in range(row):
-        if board[i][col] == 1:
+    # Check if there is a queen in the same row
+    for i in range(col):
+        if board[row][i] == 1:
             return False
 
-    # Check upper diagonal on left side
-    i, j = row, col
-    while i >= 0 and j >= 0:
+    # Check if there is a queen in the upper diagonal
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
         if board[i][j] == 1:
             return False
-        i -= 1
-        j -= 1
 
-    # Check upper diagonal on right side
-    i, j = row, col
-    while i >= 0 and j < n:
+    # Check if there is a queen in the lower diagonal
+    for i, j in zip(range(row, n), range(col, -1, -1)):
         if board[i][j] == 1:
             return False
-        i -= 1
-        j += 1
 
     return True
 
-def nqueens(board, row, n):
-    # If all queens are placed, print the board
-    if row == n:
+def solve_n_queens(board, col, n):
+    if col == n:
+        # Print the solution
+        solution = []
         for i in range(n):
             for j in range(n):
                 if board[i][j] == 1:
-                    print("[{}, {}]".format(i, j), end=" ")
-        print()
-        return
+                    solution.append([i, j])
+        print(solution)
+        return True
 
-    # Try placing a queen in each column of the current row
-    for col in range(n):
-        if is_safe(board, row, col, n):
-            board[row][col] = 1
-            nqueens(board, row+1, n)
-            board[row][col] = 0
+    res = False
+    for i in range(n):
+        if is_safe(board, i, col, n):
+            board[i][col] = 1
+            res = solve_n_queens(board, col + 1, n) or res
+            board[i][col] = 0
 
-if __name__ == '__main__':
-    # Check number of arguments
+    return res
+
+if __name__ == "__main__":
+    # Check if the correct number of arguments is provided
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
 
-    # Get value of N from command line argument
+    # Get the value of N
     try:
         n = int(sys.argv[1])
     except ValueError:
@@ -61,8 +59,8 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Initialize the board
-    board = [[0 for i in range(n)] for j in range(n)]
+    board = [[0 for x in range(n)] for y in range(n)]
 
-    # Call the nqueens function to solve the problem
-    nqueens(board, 0, n)
+    # Solve the problem
+    solve_n_queens(board, 0, n)
 
