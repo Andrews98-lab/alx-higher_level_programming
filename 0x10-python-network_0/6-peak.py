@@ -5,16 +5,16 @@ def find_peak(list_of_integers):
     if not list_of_integers:
         return None
 
-    start = 0
-    end = len(list_of_integers) - 1
+    low = 0
+    high = len(list_of_integers) - 1
 
-    while start < end:
-        mid = (start + end) // 2
+    while low < high:
+        mid = (low + high) // 2
 
-        if list_of_integers[mid] > list_of_integers[mid + 1]:
-            end = mid
+        if list_of_integers[mid] < list_of_integers[mid + 1]:
+            low = mid + 1
         else:
-            start = mid + 1
+            high = mid
 
-    return list_of_integers[start]
+    return list_of_integers[low]
 
